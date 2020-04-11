@@ -36,7 +36,3 @@ class mainRunner:
 a = mainRunner()
 a.runProcess()
 
-
-####Labeling each office 
-####gui?
-#### bot movement controls
