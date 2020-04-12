@@ -1,6 +1,7 @@
 from getAPLocations import getAPLocations
 from mapGenerator import mapGenerator
 from distanceAlgorithm import distanceAlgorithm
+from mapParameters import mapParameters
 
 class mainRunner:
 
@@ -8,8 +9,10 @@ class mainRunner:
         self.image = 'physics_corrected.jpg'
         self.levelOneOutputAddress = 'APs.jpg'
         self.levelTwoOutputAddress = 'legalPoints.jpg'
+        self.levelFourOutputAddress = 'mapParameters.jpg'
         self.apLocations = {}
         self.legalPoints = []
+        self.mapParametersDict = {}
 
 
     def runProcess(self):
@@ -30,9 +33,14 @@ class mainRunner:
     def levelThree(self):
         levelThree = distanceAlgorithm(self.apLocations,self.legalPoints)
         levelThree.getFingerprints()
+
+    def levelFour(self):
+        levelFour = mapParameters(self.image, self.levelFourOutputAddress)
+        self.mapParametersDict = levelFour.getmapParameterDone()
+
         
 
 
 a = mainRunner()
-a.runProcess()
+a.levelFour()
 
