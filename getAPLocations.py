@@ -4,9 +4,10 @@ import cv2
 
 class getAPLocations:
 
-    def __init__(self, image_address, output_address):
+    def __init__(self, image_address, output_address, scale_factor):
         self.image_path  = image_address
         self.output_address = output_address
+        self.scale_factor = scale_factor
         self.drawing_mode = False # true if mouse is pressed
         self.ix,self.iy = -1,-1
         self.locationMatrix = []
@@ -14,6 +15,9 @@ class getAPLocations:
         self.path_coordinates_Y = []
         self.labels = ['AP1', 'AP2', 'AP3']
         self.img = cv2.imread(self.image_path,0)
+        self.img = cv2.resize(self.img,(int(self.img.shape[1]*self.scale_factor),int(self.img.shape[0]*self.scale_factor)))
+
+
 
 
     def getAPDone(self):

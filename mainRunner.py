@@ -9,9 +9,12 @@ class mainRunner:
         self.image = 'physics_corrected.jpg'
         self.levelOneOutputAddress = 'APs.jpg'
         self.levelTwoOutputAddress = 'legalPoints.jpg'
+        self.levelThreeOutputAddress = 'levelThree.jpg'
         self.levelFourOutputAddress = 'mapParameters.jpg'
+        self.scale_factor = 0.7
         self.apLocations = {}
         self.legalPoints = []
+        self.fingerprintDict ={}
         self.mapParametersDict = {}
 
 
@@ -22,25 +25,25 @@ class mainRunner:
 
 
     def levelOne(self):
-        levelOne = getAPLocations(self.image, self.levelOneOutputAddress)
+        levelOne = getAPLocations(self.image, self.levelOneOutputAddress, self.scale_factor)
         self.apLocations = levelOne.getAPDone()
         levelOne.showOutput()
 
     def levelTwo(self):
-        levelTwo = mapGenerator(self.image,self.levelTwoOutputAddress)
+        levelTwo = mapGenerator(self.image,self.levelTwoOutputAddress,self.scale_factor)
         self.legalPoints = levelTwo.getMapDone()
 
     def levelThree(self):
-        levelThree = distanceAlgorithm(self.apLocations,self.legalPoints)
-        levelThree.getFingerprints()
+        levelThree = distanceAlgorithm(self.apLocations,self.legalPoints, self.image, self.levelThreeOutputAddress,self.scale_factor)
+        self.fingerprintDict = levelThree.getFingerprintDone()
 
     def levelFour(self):
-        levelFour = mapParameters(self.image, self.levelFourOutputAddress)
+        levelFour = mapParameters(self.image, self.levelFourOutputAddress,self.scale_factor)
         self.mapParametersDict = levelFour.getmapParameterDone()
 
         
 
 
 a = mainRunner()
-a.levelFour()
+a.runProcess()
 

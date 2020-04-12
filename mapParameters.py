@@ -3,13 +3,16 @@ import numpy as np
 
 class mapParameters:
 
-    def __init__(self,image_address, output_address):
+    def __init__(self,image_address, output_address, scale_factor):
+        self.scale_factor =scale_factor
         self.image_address = image_address
         self.output_address = output_address
         self.parameterCoordinates = []
         self.parameterName = []
         self.mapParametersDict = {}
         self.image = cv2.imread(self.image_address,0)
+        self.image = cv2.resize(self.image,(int(self.image.shape[1]*self.scale_factor),int(self.image.shape[0]*self.scale_factor)))
+
 
     def getmapParameterDone(self):
         self.getmapInfo()
@@ -37,6 +40,7 @@ class mapParameters:
     def getmapInfo(self):
 
         cv2.namedWindow('Image')
+        
         cv2.setMouseCallback('Image', self.getName)
 
         while(True):

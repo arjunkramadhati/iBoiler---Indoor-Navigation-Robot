@@ -5,13 +5,16 @@ import cv2
 
 class mapGenerator:
 
-    def __init__(self, image_address, output_address):
+    def __init__(self, image_address, output_address, scale_factor):
         self.image_address = image_address
         self.outputPath = output_address
+        self.scale_factor =scale_factor
         self.vertices = []
         self.path_coordinates_X = []
         self.path_coordinates_Y = []
         self.img = cv2.imread(self.image_address,0)
+        self.img = cv2.resize(self.img,(int(self.img.shape[1]*self.scale_factor),int(self.img.shape[0]*self.scale_factor)))
+
   
 
 

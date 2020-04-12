@@ -1,7 +1,5 @@
--Fix image full size problem
 -Fix path ploygon problem
 -Fix 'continue-from-save' in mainRunner
 -Color gradients on BW images
--Input all the locations of the offices
 -Finalise gui
 -Discuss drive controls and autonomy wiht HJ
