@@ -32,6 +32,7 @@ class mainRunner:
     def levelTwo(self):
         levelTwo = mapGenerator(self.image,self.levelTwoOutputAddress,self.scale_factor)
         self.legalPoints = levelTwo.getMapDone()
+        print("Level Two Done")
 
     def levelThree(self):
         levelThree = distanceAlgorithm(self.apLocations,self.legalPoints, self.image, self.levelThreeOutputAddress,self.scale_factor)

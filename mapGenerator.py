@@ -10,20 +10,32 @@ class mapGenerator:
         self.outputPath = output_address
         self.scale_factor =scale_factor
         self.vertices = []
+        self.masterArray =[]
         self.path_coordinates_X = []
         self.path_coordinates_Y = []
-        self.img = cv2.imread(self.image_address,0)
-        self.img = cv2.resize(self.img,(int(self.img.shape[1]*self.scale_factor),int(self.img.shape[0]*self.scale_factor)))
-
+        
   
 
 
     def getMapDone(self):
-        self.getLineCoordinates()
-        floorPathImage = self.drawSelectedFloor()
-        print('Processing...')
-        finalLegalPoints = self.getLegalCoordinates(floorPathImage)
-        cv2.destroyAllWindows()
+
+        while(input("Continue?") == "Yes"):
+            self.img = cv2.imread(self.image_address,0)
+            self.img = cv2.resize(self.img,(int(self.img.shape[1]*self.scale_factor),int(self.img.shape[0]*self.scale_factor)))
+            self.getLineCoordinatesOuter()
+            floorPathImage = self.drawSelectedFloor()
+            print('Processing...')
+            finalLegalPoints = self.getLegalCoordinates(floorPathImage)
+            self.masterArray.append(finalLegalPoints)
+            cv2.destroyAllWindows()
+
+        print("You entered the contours a total of : " + str(len(self.masterArray)) + " times" )
+        finalLegalPoints = self.masterArray[0]
+        print("d")
+        for i in range(len(self.masterArray) -1):
+            print("c")
+            finalLegalPoints = [x for x in finalLegalPoints if x not in self.masterArray[i+1]]
+        
         return finalLegalPoints
 
 
@@ -73,6 +85,7 @@ class mapGenerator:
     def drawSelectedFloor(self):
         blank_image = np.zeros((self.img.shape[0],self.img.shape[1]), dtype=np.uint8)
         print(self.vertices)
+
         for i in range(len(self.vertices)):
 
             cv2.line(blank_image, self.vertices[i], self.vertices[(i+1)%len(self.vertices)], (255,255,255), 10)
@@ -81,6 +94,7 @@ class mapGenerator:
             cv2.imshow("floorMap", blank_image)
             k = cv2.waitKey(1) & 0xFF
             if cv2.waitKey(1) & 0xFF == ord('q'):
+                self.vertices = []
                 return blank_image
                 break
 
@@ -102,10 +116,13 @@ class mapGenerator:
             self.path_coordinates_Y = []
         else:
             pass
+
+
+
         
 
-    def getLineCoordinates(self):
-        
+    def getLineCoordinatesOuter(self):
+        print("Taking Outer Loop")
         cv2.namedWindow('image')
         cv2.setMouseCallback('image',self.draw_path)
 
@@ -115,5 +132,7 @@ class mapGenerator:
             self.drawLine()
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
+
+
 
 
