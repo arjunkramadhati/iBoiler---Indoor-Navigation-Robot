@@ -28,6 +28,7 @@ class mainRunner:
         levelOne = getAPLocations(self.image, self.levelOneOutputAddress, self.scale_factor)
         self.apLocations = levelOne.getAPDone()
         levelOne.showOutput()
+        print("Level One Done")
 
     def levelTwo(self):
         levelTwo = mapGenerator(self.image,self.levelTwoOutputAddress,self.scale_factor)
@@ -37,6 +38,7 @@ class mainRunner:
     def levelThree(self):
         levelThree = distanceAlgorithm(self.apLocations,self.legalPoints, self.image, self.levelThreeOutputAddress,self.scale_factor)
         self.fingerprintDict = levelThree.getFingerprintDone()
+        print("Level Three Done")
 
     def levelFour(self):
         levelFour = mapParameters(self.image, self.levelFourOutputAddress,self.scale_factor)

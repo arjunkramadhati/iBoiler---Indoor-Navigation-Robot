@@ -70,7 +70,7 @@ class getAPLocations:
         output = {}
 
         for i in range(3):
-            output[self.labels[i]] = [self.path_coordinates_X[i], self.path_coordinates_Y[i]]
+            output[self.labels[i]] = (self.path_coordinates_X[i], self.path_coordinates_Y[i])
 
         return output
 

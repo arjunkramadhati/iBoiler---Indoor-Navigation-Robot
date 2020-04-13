@@ -31,9 +31,8 @@ class mapGenerator:
 
         print("You entered the contours a total of : " + str(len(self.masterArray)) + " times" )
         finalLegalPoints = self.masterArray[0]
-        print("d")
+
         for i in range(len(self.masterArray) -1):
-            print("c")
             finalLegalPoints = [x for x in finalLegalPoints if x not in self.masterArray[i+1]]
         
         return finalLegalPoints
