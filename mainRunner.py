@@ -1,3 +1,11 @@
+'''
+This code is the main code to manage the setting up of the map which the robot can understand. 
+Author : Arjun Kramadhati Gopi
+
+
+'''
+
+
 from getAPLocations import getAPLocations
 from mapGenerator import mapGenerator
 from distanceAlgorithm import distanceAlgorithm
@@ -53,6 +61,16 @@ class mainRunner:
                 self.levelThree()
         else:
             self.levelThree()
+
+        if self.saver.checkDbEntry('L4'):
+            q = input('Level Four entry exists. Press Enter to continue. Anything else to overwrite')
+            if q == "":
+                self.mapParametersDict = self.saver.getDbEntry('L4')
+                pass
+            else:
+                self.levelFour()
+        else:
+            self.levelFour()
         
 
 
@@ -83,6 +101,9 @@ class mainRunner:
         #add map details
         levelFour = mapParameters(self.image, self.levelFourOutputAddress,self.scale_factor)
         self.mapParametersDict = levelFour.getmapParameterDone()
+        self.saver.saveLevelOutput('L4',self.mapParametersDict)
+        print("Level Four Done")
+
 
         
 
