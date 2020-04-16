@@ -145,7 +145,7 @@ class planPath:
 
         return False
 
-
+'''
 saver = databaseManager('Database/db')
 a = planPath('physics_corrected.jpg','Database/runtimeImages/path.jpg',saver.getDbEntry('L2'),0.7)
 route,grid,start,goal = a.planPath()
@@ -177,3 +177,4 @@ ax.scatter(goal[1],goal[0], marker = "*", color = "red", s = 200)
 ax.plot(y_coords,x_coords, color = "black")
 
 plt.show()
+'''
