@@ -1,4 +1,4 @@
--gui
--path algorithm
--bot
--drive controls
+- RSS algorithm fix
+- Path PLanner fix
+- Path Tracker fix 
+- iBoiler class structure

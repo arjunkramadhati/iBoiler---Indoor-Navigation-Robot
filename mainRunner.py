@@ -11,6 +11,7 @@ from mapGenerator import mapGenerator
 from distanceAlgorithm import distanceAlgorithm
 from mapParameters import mapParameters
 from databaseManager import databaseManager
+from rssAlgorithm import rssAlgorithm
 
 class mainRunner:
 
@@ -20,12 +21,17 @@ class mainRunner:
         self.levelTwoOutputAddress = 'Database/checkpointImages/legalPoints.jpg'
         self.levelThreeOutputAddress = 'Database/checkpointImages/levelThree.jpg'
         self.levelFourOutputAddress = 'Database/checkpointImages/mapParameters.jpg'
+        self.levelFiveOutputAddress = 'Database/checkpointImages/RSSHeatMap.jpg'
         self.databaseLocation ='Database/db'
+        self.nakagamiA = 4.32
+        self.nakagamiB = 3.18
+        self.RSS0 = 10
         self.scale_factor = 0.7
         self.apLocations = {}
         self.legalPoints = []
         self.fingerprintDict ={}
         self.mapParametersDict = {}
+        self.rssFingerprintDict = {}
 
 
     def runProcess(self):
@@ -71,6 +77,16 @@ class mainRunner:
                 self.levelFour()
         else:
             self.levelFour()
+
+        if self.saver.checkDbEntry('L5'):
+            q = input('Level Five entry exists. Press Enter to continue. Anything else to overwrite')
+            if q == "":
+                self.rssFingerprintDict = self.saver.getDbEntry('L5')
+                pass
+            else:
+                self.levelFive()
+        else:
+            self.levelFive()
         
 
 
@@ -104,7 +120,11 @@ class mainRunner:
         self.saver.saveLevelOutput('L4',self.mapParametersDict)
         print("Level Four Done")
 
-
+    def levelFive(self):
+        levelFive = rssAlgorithm(self.apLocations,self.legalPoints, self.image, self.levelFiveOutputAddress,self.scale_factor,self.RSS0,self.nakagamiA,self.nakagamiB)
+        self.rssFingerprintDict = levelFive.getFingerprintDone()
+        self.saver.saveLevelOutput('L5',self.rssFingerprintDict)
+        print("Level Five Done")
         
 
 
