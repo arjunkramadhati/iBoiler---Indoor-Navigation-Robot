@@ -50,7 +50,7 @@ grid = np.array([
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]])
 
 # start point and goal
-
+print(type(grid))
 start = (0,0)
 
 goal = (0,19)
@@ -160,6 +160,8 @@ def astar(array, start, goal):
 
 route = astar(grid, start, goal)
 
+print(type(start))
+print(type(route))
 route = route + [start]
 
 route = route[::-1]
