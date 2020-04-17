@@ -10,7 +10,7 @@ from sklearn.neighbors import NearestNeighbors
 
 class locationServices:
 
-    def __init__(self,fingerprintDict, apLocations, legalPoints,RSS0, nakagamiA, nakagamiB, magnificationLevel):
+    def __init__(self,fingerprintDict, apLocations, legalPoints,RSS0, nakagamiA, nakagamiB):
         self.selectedLocation = []
         self.fingerprintDict = fingerprintDict
         self.RSS0 = RSS0
@@ -18,7 +18,6 @@ class locationServices:
         self.nakagamiB = nakagamiB
         self.apLocations = apLocations
         self.legalPoints =legalPoints
-        self.magnificationLevel = magnificationLevel
         self.rssHelper = rssAlgorithm(self.apLocations,self.legalPoints,self.RSS0,self.nakagamiA,self.nakagamiB)
         self.getKNNReady()
         self.legalKNN()
@@ -71,8 +70,7 @@ class locationServices:
             k = cv2.waitKey(1) & 0xFF
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
-        cv2.destroyAllWindows()
-          
+        cv2.destroyAllWindows()        
 
     def locationKNN(self,data_set,point):
         lKNN=NearestNeighbors(n_neighbors=1)
@@ -98,5 +96,5 @@ class locationServices:
 
 
 saver = databaseManager('Database/db')
-ls = locationServices(saver.getDbEntry('L5'),saver.getDbEntry('L1'),saver.getDbEntry('L2'),10,4.32,3.18,8)
+ls = locationServices(saver.getDbEntry('L5'),saver.getDbEntry('L1'),saver.getDbEntry('L2'),10,4.32,3.18)
 ls.testLocation('physics_corrected.jpg',0.7)
