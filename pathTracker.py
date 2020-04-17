@@ -30,7 +30,7 @@ class pathTracker:
                 break
             else:
                 angle = self.getAngle([(route[i][0],route[i][1]),(route[i+1][0],route[i+1][1])])
-                if angle == initialAngle:
+                if angle == initialAngle or (angle >= (initialAngle -25) and angle <= (initialAngle+25)):
                     pass
                 else:
                     self.wayPoints.append(route[i])

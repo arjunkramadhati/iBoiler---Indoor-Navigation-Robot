@@ -121,8 +121,8 @@ class mainRunner:
         print("Level Four Done")
 
     def levelFive(self):
-        levelFive = rssAlgorithm(self.apLocations,self.legalPoints, self.image, self.levelFiveOutputAddress,self.scale_factor,self.RSS0,self.nakagamiA,self.nakagamiB)
-        self.rssFingerprintDict = levelFive.getFingerprintDone()
+        levelFive = rssAlgorithm(self.apLocations,self.legalPoints,self.RSS0,self.nakagamiA,self.nakagamiB)
+        self.rssFingerprintDict = levelFive.getFingerprintDone(self.image, self.levelFiveOutputAddress,self.scale_factor)
         self.saver.saveLevelOutput('L5',self.rssFingerprintDict)
         print("Level Five Done")
         

@@ -6,10 +6,9 @@ from scipy.stats import nakagami
 
 class rssAlgorithm:
 
-    def __init__(self, apLocations, legalPoints, input_image, output_address, scale_factor,RSS0, nakagamiA, nakagamiB):
-        self.input_image = input_image
-        self.output_address = output_address
-        self.scale_factor =scale_factor
+    def __init__(self, apLocations, legalPoints,RSS0, nakagamiA, nakagamiB):
+
+        
         self.RSS0 = RSS0
         self.numargs = nakagami.numargs
         self.nakagamiA = nakagamiA
@@ -20,12 +19,15 @@ class rssAlgorithm:
         self.legalPoints =legalPoints
         self.fingerprintDictionary = {}
         self.trylist = []
+        
+
+    def getFingerprintDone(self,input_image,output_address,scale_factor):
+        self.scale_factor =scale_factor
+        self.input_image = input_image
+        self.output_address = output_address
         self.img = cv2.imread(self.input_image,0)
         self.img = cv2.cvtColor(self.img,cv2.COLOR_GRAY2RGB)
         self.img = cv2.resize(self.img,(int(self.img.shape[1]*self.scale_factor),int(self.img.shape[0]*self.scale_factor)))
-
-
-    def getFingerprintDone(self):
         self.getFingerprints()
         self.drawAPs()
         self.saveOutput()
