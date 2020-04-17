@@ -21,6 +21,12 @@ class locationServices:
         self.magnificationLevel = magnificationLevel
         self.rssHelper = rssAlgorithm(self.apLocations,self.legalPoints,self.RSS0,self.nakagamiA,self.nakagamiB)
         self.getKNNReady()
+        self.legalKNN()
+
+    def legalKNN(self):
+        self.legalKNNHelper = NearestNeighbors(n_neighbors=1)
+        self.legalKNNHelper.fit(self.legalPoints)
+
 
     def getKNNReady(self):
         self.knnHelper = NearestNeighbors(n_neighbors=1)
@@ -28,7 +34,7 @@ class locationServices:
         self.knnHelper.fit(self.data_set)
 
     def getCircularPoints(self,x,y):
-            self.selectedLocation.append((x,y))
+
             self.selectedLocation.append((x+1,y))
             self.selectedLocation.append((x-1,y))
             self.selectedLocation.append((x,y+1))
@@ -43,7 +49,7 @@ class locationServices:
 
         if event == cv2.EVENT_LBUTTONDOWN:
             cv2.circle(self.img,(x,y) , 10, (0,255,255), 4)
-            self.getCircularPoints(x,y)
+            self.selectedLocation.append((x,y))
 
     def testLocation(self, inputImage, scale_factor):
         self.scale_factor =scale_factor
@@ -65,37 +71,27 @@ class locationServices:
             k = cv2.waitKey(1) & 0xFF
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
-        '''
-        while(True):
-            if len(self.selectedLocation) >=1:
-                
-                locations = self.getCurrentLocation(self.selectedLocation)
-                self.selectedLocation=[]
-                for point in locations:
-                    cv2.circle(self.img,(point[0],point[1]) , 10, (0,0,255), 4)
-
-
-            cv2.imshow('image',self.img)
-            k = cv2.waitKey(1) & 0xFF
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                break
-                '''
         cv2.destroyAllWindows()
-        
+          
 
     def locationKNN(self,data_set,point):
         lKNN=NearestNeighbors(n_neighbors=1)
         lKNN.fit(data_set)
         return lKNN.kneighbors([point],return_distance=False)
 
-    def getCurrentLocation(self,points, iter = 10):
+    def getCurrentLocation(self,point, iter = 10):
+        self.getCircularPoints(point[0][0],point[0][1])
         locations =[]
         for i in range(iter):
-            for point in points:
+            for point in self.selectedLocation:
                 rssTuple = tuple(self.rssHelper.calculateRSS(point))
                 locations.append(self.fingerprintDict[self.data_set[self.getKNN(rssTuple)[0][0]]])
-        location = locations[self.locationKNN(locations,points[0])[0][0]]
+        locationRaw = locations[self.locationKNN(locations,self.selectedLocation[0])[0][0]]
+        location = self.legalPoints[self.getLegalKNN(locationRaw)[0][0]]
         return location
+
+    def getLegalKNN(self,point):
+        return self.legalKNNHelper.kneighbors([point], return_distance=False)
 
     def getKNN(self,rssTuple):
         return self.knnHelper.kneighbors([rssTuple], return_distance=False)
