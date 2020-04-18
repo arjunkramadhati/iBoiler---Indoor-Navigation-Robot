@@ -47,6 +47,7 @@ class locationServices:
     def draw_path(self,event,x,y,flags,param):
 
         if event == cv2.EVENT_LBUTTONDOWN:
+
             cv2.circle(self.img,(x,y) , 10, (0,255,255), 4)
             self.selectedLocation.append((x,y))
 
@@ -94,7 +95,8 @@ class locationServices:
     def getKNN(self,rssTuple):
         return self.knnHelper.kneighbors([rssTuple], return_distance=False)
 
-
+'''
 saver = databaseManager('Database/db')
 ls = locationServices(saver.getDbEntry('L5'),saver.getDbEntry('L1'),saver.getDbEntry('L2'),10,4.32,3.18)
 ls.testLocation('physics_corrected.jpg',0.7)
+'''

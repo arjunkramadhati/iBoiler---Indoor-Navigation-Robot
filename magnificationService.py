@@ -16,6 +16,12 @@ class magnificationService:
         self.img = cv2.cvtColor(self.img,cv2.COLOR_GRAY2RGB)
         self.img = cv2.resize(self.img,(int(self.img.shape[1]*self.scale_factor),int(self.img.shape[0]*self.scale_factor)))
 
+    def reInit(self):
+        self.img = cv2.imread(self.input_image,0)
+        self.img = cv2.cvtColor(self.img,cv2.COLOR_GRAY2RGB)
+        self.img = cv2.resize(self.img,(int(self.img.shape[1]*self.scale_factor),int(self.img.shape[0]*self.scale_factor)))
+       
+
     def draw_path(self,event,x,y,flags,param):
 
         if event == cv2.EVENT_LBUTTONDOWN:
@@ -62,7 +68,7 @@ class magnificationService:
         ep7 = point[0] + int((radius+10)*(np.sin(angle2)))
         ep8 = point [1] + int((radius+10)*(np.cos(angle2)))
         b = pathTracker()
-        print(b.getAngle([(ep5,ep6),(ep7,ep8)],1))
+        print(b.getAngle([(ep7,ep8),(ep5,ep6)],1))
         angle = b.getAngle([(ep5,ep6),(ep7,ep8)],1)
         if (ep5 >= ep7) and (ep6 >= ep8):
             print("1")
@@ -70,7 +76,7 @@ class magnificationService:
         cv2.line(self.img,(ep1,ep2),(ep3,ep4),(255,0,0),2)
         cv2.line(self.img,(ep5,ep6),(ep7,ep8),(255,0,0),2)
 
-
+'''
 a = magnificationService('physics_corrected.jpg',0.7,4,70)
 
-a.tester(180)
+a.tester(0)'''

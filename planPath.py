@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from matplotlib.pyplot import figure
 from databaseManager import databaseManager
 import cv2
+from scipy.spatial import distance
 
 
 
@@ -27,9 +28,12 @@ class planPath:
         for p in self.legalPoints:
             self.matrix[p[1],p[0]]=0
         
+    def getMatrix(self):
+        return self.matrix
     def draw_path(self,event,x,y,flags,param):
 
         if event == cv2.EVENT_LBUTTONDOWN:
+            #print(x,y)
             self.sgCoordinates.append((y,x))
 
 
@@ -48,14 +52,16 @@ class planPath:
         return route, self.matrix,self.sgCoordinates[0],self.sgCoordinates[1]
 
     def executePathPlanning(self,startCoord, endCoord):
+        #print(startCoord)
+        #print(endCoord)
         route = self.astar(self.matrix, startCoord, endCoord)
-        print(type(startCoord))
-        print(type(route))
+        #print(type(startCoord))
+        #print(type(route))
 
         route = route + [startCoord]
 
-        route = route[::-1]
-
+        #route = route[::-1]
+        route = list(reversed(route))
         return route
 
 

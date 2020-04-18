@@ -36,8 +36,9 @@ class iBoiler:
 
 
     def botGod(self):
-        updatedImage = self.magnificationServiceHelper.magnify(self.masterLocation,self.masterTheta)
-        filename = str(time.time()) + '.jpg'
+        self.magnificationServiceHelper.reInit()
+        updatedImage = self.magnificationServiceHelper.magnify(self.masterLocation[0],self.masterTheta)
+        filename = 'Navigation/' + str(time.time()) + '.jpg'
         cv2.imwrite(filename,updatedImage)
 
 
@@ -48,30 +49,35 @@ class iBoiler:
         self.startRoomCoordinates = self.getNearestLegalPoint(self.getRoomCoordinates(startRoom))
         self.goalRoomCoordinates = self.getNearestLegalPoint(self.getRoomCoordinates(goalRoom))
         self.currentLocation = self.locactionServicesHelper.getCurrentLocation(self.masterLocation)
-        wayPoints1 = self.planNavigation(self.currentLocation,self.startRoomCoordinates)
-        wayPoints2 = self.planNavigation(self.startRoomCoordinates,self.goalRoomCoordinates)
+        wayPoints1 = self.planNavigation(tuple(reversed(self.currentLocation)),tuple(reversed(self.startRoomCoordinates)))
         self.autoNavigate(wayPoints1)
         time.sleep(3)
+        wayPoints2 = self.planNavigation(self.startRoomCoordinates,self.goalRoomCoordinates)
         self.autoNavigate(wayPoints2)
 
     def planNavigation(self,start,goal):
-        return self.pathTracker.getWayPoints(self.pathPlanner.executePathPlanning(start, goal))
+
+        return self.pathTracker.getWayPoints(self.planPath(start,goal))
 
 
     def truePositionUpdate(self,vL,vR):
         currentPosition = self.masterLocation
         radiusRight = vR * self.timeStep
-        rightWheelPosX = currentPosition[0] + int(self.botRadius*(np.sin(-90)))
-        rightWheelPosY = currentPosition[1] + int(self.botRadius*(np.cos(-90)))
+        rightWheelPosX = currentPosition[0][0] + int(self.botRadius*(np.sin(-90)))
+        rightWheelPosY = currentPosition[0][1] + int(self.botRadius*(np.cos(-90)))
         rightWheelPosXUpdated = rightWheelPosX + int(radiusRight*(np.sin(self.masterTheta)))
         rightWheelPosYUpdated = rightWheelPosY + int(radiusRight*(np.cos(self.masterTheta)))
 
         radiusLeft = vL * self.timeStep
-        leftWheelPosX = currentPosition[0] + int(self.botRadius*(np.sin(90)))
-        leftWheelPosY = currentPosition[1] + int(self.botRadius*(np.cos(90)))
+        leftWheelPosX = currentPosition[0][0] + int(self.botRadius*(np.sin(90)))
+        leftWheelPosY = currentPosition[0][1] + int(self.botRadius*(np.cos(90)))
         leftWheelPosXUpdated = leftWheelPosX + int(radiusLeft*(np.sin(self.masterTheta)))
         leftWheelPosYUpdated = leftWheelPosY + int(radiusLeft*(np.cos(self.masterTheta)))
-        masterX = (rightWheel)
+        masterX = int((rightWheelPosXUpdated + leftWheelPosXUpdated)/2)
+        masterY = int((rightWheelPosYUpdated + leftWheelPosYUpdated)/2)
+        self.masterTheta = self.getAngle([self.masterLocation[0],(masterX,masterY)])
+        self.masterLocation = [(masterX,masterY)]
+        
         
 
     def autoNavigate(self,wayPoints,navigationTresh = 3):
@@ -80,12 +86,15 @@ class iBoiler:
             while(distance.euclidean(botLocation,wayPoint) >3):
                 vL,vR = self.velocityControls(botLocation,wayPoint)
                 self.truePositionUpdate(vL,vR)
-                botLocation = self.locactionServicesHelper.getCurrentLocation(self.masterLocation)
+                botLocation = [self.locactionServicesHelper.getCurrentLocation(self.masterLocation)]
                 self.botGod()
 
 
     def velocityControls(self, currentPoint, endPoint):
-        headingAngleNeeded = self.getAngle([currentPoint,endPoint])
+        print(currentPoint[0])
+        print(endPoint)
+        headingAngleNeeded = self.getAngle([currentPoint[0],endPoint])
+        
         if headingAngleNeeded == self.masterTheta:
             vL = self.setVelocity(currentPoint,endPoint)
             vR = vL
@@ -132,3 +141,7 @@ class iBoiler:
 
     def trackPath(self,plannedRoute):
         return self.pathTracker.getWayPoints(plannedRoute)
+
+
+a = iBoiler('physics_corrected.jpg','Database/db',4,5,5,10,4.32,3.18,0.7,1)
+a.botBrain('R112','R121',[(500,111)],-90)
