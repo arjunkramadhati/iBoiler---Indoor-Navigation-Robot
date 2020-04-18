@@ -85,14 +85,18 @@ class iBoiler:
         for wayPoint in wayPoints:
             while(distance.euclidean(botLocation,wayPoint) >3):
                 vL,vR = self.velocityControls(botLocation,wayPoint)
+                print(self.masterLocation)
                 self.truePositionUpdate(vL,vR)
+                print(self.masterLocation)
                 botLocation = [self.locactionServicesHelper.getCurrentLocation(self.masterLocation)]
+                print(botLocation)
+                
                 self.botGod()
 
 
     def velocityControls(self, currentPoint, endPoint):
-        print(currentPoint[0])
-        print(endPoint)
+        #print(currentPoint[0])
+        #print(endPoint)
         headingAngleNeeded = self.getAngle([currentPoint[0],endPoint])
         
         if headingAngleNeeded == self.masterTheta:

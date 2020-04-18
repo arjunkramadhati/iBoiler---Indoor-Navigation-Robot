@@ -27,9 +27,12 @@ class planPath:
 
         for p in self.legalPoints:
             self.matrix[p[1],p[0]]=0
+        self.matrixOriginal = self.matrix
+        #for x,y in self.matrix.shape:
+
         
     def getMatrix(self):
-        return self.matrix
+        return self.matrixOriginal
     def draw_path(self,event,x,y,flags,param):
 
         if event == cv2.EVENT_LBUTTONDOWN:
