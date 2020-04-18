@@ -11,7 +11,7 @@ class pathTracker:
     def __init__(self):
         self.wayPoints = []
 
-    def getAngle(self,points, mode = 0):
+    def getAngle(self,points, mode = 1):
         if mode == 0:
             if abs(points[0][0]-points[1][0]) == 0:
                 return 90.0
@@ -39,7 +39,7 @@ class pathTracker:
             
 
 
-
+'''
 pt=pathTracker()
 
 
@@ -78,3 +78,4 @@ for i in range(len(wps)):
 ax.plot(y_coords,x_coords, color = "black")
 
 plt.show()
+'''
