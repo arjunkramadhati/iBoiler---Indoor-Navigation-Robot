@@ -7,10 +7,12 @@ from pathTracker import pathTracker
 from scipy.spatial import distance
 from magnificationService import magnificationService
 import time
+#from gui import guiStart
 
 class iBoiler:
 
     def __init__(self, image_Address, dbLocation, botRadius, botMaxVelocity, botturningVelocity, RSS0, nakagamiA, nakagamiB, scale_factor, timeStep):
+        #self.gui = guiStart()
         self.dbHelper = databaseManager(dbLocation)
         self.input_image = image_Address
         self.scale_factor = scale_factor
@@ -38,14 +40,16 @@ class iBoiler:
     def botGod(self):
         self.magnificationServiceHelper.reInit()
         updatedImage = self.magnificationServiceHelper.magnify(self.masterLocation[0],self.masterTheta)
-        filename = 'Navigation/' + str(time.time()) + '.jpg'
-        cv2.imwrite(filename,updatedImage)
+        #filename = 'Navigation/' + str(time.time()) + '.jpg'
+        bigImage = self.magnificationServiceHelper.getOriginalSize()
+        return bigImage,updatedImage
+        #cv2.imwrite(filename,updatedImage)
 
 
     def botBrain(self,startRoom, goalRoom, masterLocation, masterTheta):
         self.masterLocation = masterLocation
         self.masterTheta =masterTheta
-        self.botGod()
+        #self.botGod()
         self.startRoomCoordinates = self.getNearestLegalPoint(self.getRoomCoordinates(startRoom))
         self.goalRoomCoordinates = self.getNearestLegalPoint(self.getRoomCoordinates(goalRoom))
         self.currentLocation = self.locactionServicesHelper.getCurrentLocation(self.masterLocation)
@@ -91,7 +95,7 @@ class iBoiler:
                 botLocation = [self.locactionServicesHelper.getCurrentLocation(self.masterLocation)]
                 print(botLocation)
                 
-                self.botGod()
+                #self.botGod()
 
 
     def velocityControls(self, currentPoint, endPoint):
@@ -148,4 +152,4 @@ class iBoiler:
 
 
 a = iBoiler('physics_corrected.jpg','Database/db',4,5,5,10,4.32,3.18,0.7,1)
-a.botBrain('R112','R121',[(500,111)],-90)
+#a.botBrain('R112','R121',[(500,111)],-90)

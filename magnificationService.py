@@ -55,6 +55,10 @@ class magnificationService:
 
         return result
 
+    def getOriginalSize(self):
+        return self.img
+
+
     def drawBot(self,point,theta, radius = 4):
         cv2.circle(self.img,(point[0],point[1]) , radius, (255,0,0), 5)
         angle = np.deg2rad(theta - 25) 

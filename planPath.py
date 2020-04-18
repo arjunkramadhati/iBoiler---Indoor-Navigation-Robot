@@ -28,7 +28,7 @@ class planPath:
         for p in self.legalPoints:
             self.matrix[p[1],p[0]]=0
         self.matrixOriginal = self.matrix
-        #for x,y in self.matrix.shape:
+        
 
         
     def getMatrix(self):
