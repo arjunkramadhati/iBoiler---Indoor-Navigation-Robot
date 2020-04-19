@@ -73,19 +73,21 @@ class gui(Frame):
         self.goalListSelectedValue = value
 
     def beginNavigation(self):
-        print(self.startListSelected)
-        self.iBoilerObj.botBrain(str(self.startListSelectedValue),str(self.goalListSelectedValue),[(500,111)],-90)
+        self.iBoilerObj.botBrain(str(self.startListSelectedValue),str(self.goalListSelectedValue),[(500,111)],0)
     
     def obtainResults(self):
         while(True):
             
             bigImg,img = self.iBoilerObj.botGod()
-            bigImg = cv2.resize(bigImg,(650,900))
-            img = cv2.resize(img,(900,900))
-            bigPhoto = PIL.ImageTk.PhotoImage(image = PIL.Image.fromarray(bigImg))
-            photo = PIL.ImageTk.PhotoImage(image = PIL.Image.fromarray(img))
-            self.canvasMapBig.create_image(0, 0, image=bigPhoto, anchor = NW)
-            self.canvasMapZoom.create_image(0, 0, image=photo, anchor = NW)
+            if bigImg is None or img is None:
+                pass
+            else:
+                bigImg = cv2.resize(bigImg,(650,900))
+                img = cv2.resize(img,(900,900))
+                bigPhoto = PIL.ImageTk.PhotoImage(image = PIL.Image.fromarray(bigImg))
+                photo = PIL.ImageTk.PhotoImage(image = PIL.Image.fromarray(img))
+                self.canvasMapBig.create_image(0, 0, image=bigPhoto, anchor = NW)
+                self.canvasMapZoom.create_image(0, 0, image=photo, anchor = NW)
             time.sleep(1)
 
     def startOperations(self,event):
@@ -93,6 +95,7 @@ class gui(Frame):
         threadStart = threading.Thread(target=self.beginNavigation, daemon=True )
         threadResults = threading.Thread(target=self.obtainResults, daemon=True)
         threadStart.start()
+        time.sleep(3)
         threadResults.start()
 
     

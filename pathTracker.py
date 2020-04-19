@@ -22,6 +22,7 @@ class pathTracker:
             if abs(points[0][1]-points[1][1]) == 0:
                 return 90.0
             return np.rad2deg(np.arctan((abs(points[0][0]-points[1][0])/abs(points[0][1]-points[1][1]))))
+            #return np.arctan2(points[0][0]-points[1][0],points[0][1]-points[1][1])
 
     def cleanWPs(self):
         poplist = []

@@ -31,6 +31,8 @@ class iBoiler:
         self.botturningVelocity = botturningVelocity
         self.vL = 0
         self.vR = 0
+        self.timeStepCount =0
+        self.currentWP = 0
         self.img = cv2.imread(self.input_image,0)
         self.img = cv2.cvtColor(self.img,cv2.COLOR_GRAY2RGB)
         self.img = cv2.resize(self.img,(int(self.img.shape[1]*self.scale_factor),int(self.img.shape[0]*self.scale_factor)))
@@ -39,9 +41,10 @@ class iBoiler:
 
     def botGod(self):
         self.magnificationServiceHelper.reInit()
-        updatedImage = self.magnificationServiceHelper.magnify(self.masterLocation[0],self.masterTheta)
+        updatedImage = self.magnificationServiceHelper.magnify(self.currentWP,self.masterLocation[0],self.masterTheta)
         #filename = 'Navigation/' + str(time.time()) + '.jpg'
         bigImage = self.magnificationServiceHelper.getOriginalSize()
+        #compareImg = self.magnificationServiceHelper.getBotLocComparison()
         return bigImage,updatedImage
         #cv2.imwrite(filename,updatedImage)
 
@@ -54,9 +57,10 @@ class iBoiler:
         self.goalRoomCoordinates = self.getNearestLegalPoint(self.getRoomCoordinates(goalRoom))
         self.currentLocation = self.locactionServicesHelper.getCurrentLocation(self.masterLocation)
         wayPoints1 = self.planNavigation(tuple(reversed(self.currentLocation)),tuple(reversed(self.startRoomCoordinates)))
+        wayPoints2 = self.planNavigation(tuple(reversed(self.startRoomCoordinates)),tuple(reversed(self.goalRoomCoordinates)))
         self.autoNavigate(wayPoints1)
         time.sleep(3)
-        wayPoints2 = self.planNavigation(self.startRoomCoordinates,self.goalRoomCoordinates)
+        
         self.autoNavigate(wayPoints2)
 
     def planNavigation(self,start,goal):
@@ -65,7 +69,26 @@ class iBoiler:
 
 
     def truePositionUpdate(self,vL,vR):
-        currentPosition = self.masterLocation
+        print(vL)
+        print(vR)
+        
+        currentPosition = self.masterLocation[0]
+        currentTheta = self.masterTheta
+        
+        vdiff = vL-vR
+        if vdiff ==0:
+            newX = int(vL*self.timeStep*np.cos(currentTheta)+currentPosition[0])
+            newY = int(vR*self.timeStep*np.sin(currentTheta)+currentPosition[1])
+            self.masterLocation = [(newX,newY)]
+        else:
+            self.masterTheta = currentTheta + (np.pi/18) 
+            '''
+            alpha = np.arctan((self.timeStep*(vL-vR))/(self.botRadius*2))
+            newX = int(currentPosition[0] + ((self.timeStep*(vL+vR)/2)*np.sin(currentTheta-alpha)))
+            newY = int(currentPosition[1] + ((self.timeStep*(vL+vR)/2)*np.cos(currentTheta-alpha)))
+            self.masterTheta = currentTheta - np.arctan((vdiff*self.timeStep)/(self.botRadius*2))
+            self.masterLocation = [(newX,newY)]'''
+        '''
         radiusRight = vR * self.timeStep
         rightWheelPosX = currentPosition[0][0] + int(self.botRadius*(np.sin(-90)))
         rightWheelPosY = currentPosition[0][1] + int(self.botRadius*(np.cos(-90)))
@@ -80,38 +103,99 @@ class iBoiler:
         masterX = int((rightWheelPosXUpdated + leftWheelPosXUpdated)/2)
         masterY = int((rightWheelPosYUpdated + leftWheelPosYUpdated)/2)
         self.masterTheta = self.getAngle([self.masterLocation[0],(masterX,masterY)])
-        self.masterLocation = [(masterX,masterY)]
+        self.masterLocation = [(masterX,masterY)]'''
         
         
 
     def autoNavigate(self,wayPoints,navigationTresh = 3):
         botLocation = self.masterLocation
         for wayPoint in wayPoints:
-            while(distance.euclidean(botLocation,wayPoint) >3):
-                vL,vR = self.velocityControls(botLocation,wayPoint)
-                print(self.masterLocation)
+            
+            self.currentWP = wayPoint
+            botLocation = [self.locactionServicesHelper.getCurrentLocation(self.masterLocation)]
+            headingAngleNeeded = self.getAngle([botLocation[0],tuple(reversed(wayPoint))]) 
+            print("ha" + str(headingAngleNeeded))
+            print("ma" + str(self.masterTheta))
+            if headingAngleNeeded != self.masterTheta:
+                if self.masterTheta >= np.pi:
+                    count =int((self.timeStep*(headingAngleNeeded + (np.pi+self.masterTheta)))/(np.pi/18))
+                else:
+                    count =int((self.timeStep*(headingAngleNeeded + (np.pi-self.masterTheta)))/(np.pi/18)) 
+                print("count" + str(count))
+                self.timeStepCount = 0
+                self.turningOperation(count)
+            else:
+                vL = self.botMaxVelocity
+                vR = vL
+                while(distance.euclidean(self.masterLocation,tuple(reversed(wayPoint))) >25):
+                    self.truePositionUpdate(vL,vR)
+                    time.sleep()
+                     
+            #self.timeStepCount +=self.timeStep
+            print("after operation " + str(self.masterTheta))
+            vL = self.botMaxVelocity
+            vR = vL
+            while(distance.euclidean(self.masterLocation,tuple(reversed(wayPoint))) >25):
                 self.truePositionUpdate(vL,vR)
-                print(self.masterLocation)
-                botLocation = [self.locactionServicesHelper.getCurrentLocation(self.masterLocation)]
-                print(botLocation)
+                print('distance' + str(distance.euclidean(self.masterLocation,tuple(reversed(wayPoint)))))
+                time.sleep(1)
+                #print(botLocation)
                 
                 #self.botGod()
 
-
-    def velocityControls(self, currentPoint, endPoint):
-        #print(currentPoint[0])
-        #print(endPoint)
-        headingAngleNeeded = self.getAngle([currentPoint[0],endPoint])
-        
-        if headingAngleNeeded == self.masterTheta:
-            vL = self.setVelocity(currentPoint,endPoint)
-            vR = vL
-        if headingAngleNeeded > self.masterTheta:
-            vR = self.botturningVelocity
-            vL = 0
-        if headingAngleNeeded < self.masterTheta:
+    def turningOperation(self, count):
+        while(self.timeStepCount< count):
             vL = self.botturningVelocity
             vR = 0
+            self.truePositionUpdate(vL,vR)
+            self.timeStepCount +=1
+            print("current count " + str(self.timeStepCount))
+            time.sleep(1)
+        
+
+    def velocityControls(self, currentPoint, endPoint, headingAngleNeeded,count):
+        #print(currentPoint[0])
+        #print(endPoint)
+        vL = 0
+        vR = 0
+        
+        if(currentPoint[0][0]>endPoint[0]) and (currentPoint[0][1]>endPoint[1]):
+            print("Target towards NW")        
+        if(currentPoint[0][0]<endPoint[0]) and (currentPoint[0][1]<endPoint[1]):
+            print("Target towards SE")
+        if(currentPoint[0][0]>endPoint[0]) and (currentPoint[0][1]<endPoint[1]):
+            print("Target towards SW")
+        if(currentPoint[0][0]<endPoint[0]) and (currentPoint[0][1]>endPoint[1]):
+            print("Target towards NE")
+
+        if(currentPoint[0][0]==endPoint[0]) and (currentPoint[0][1]>endPoint[1]):
+            print("Target towards N")        
+        if(currentPoint[0][0]==endPoint[0]) and (currentPoint[0][1]<endPoint[1]):
+            print("Target towards S")
+        if(currentPoint[0][0]>endPoint[0]) and (currentPoint[0][1]==endPoint[1]):
+            print("Target towards W")
+        if(currentPoint[0][0]<endPoint[0]) and (currentPoint[0][1]==endPoint[1]):
+            print("Target towards E")
+
+
+        print(headingAngleNeeded)
+        print(self.masterTheta)
+
+        if headingAngleNeeded == self.masterTheta  :
+            vL = self.setVelocity(currentPoint,endPoint)
+            vR = vL
+        else:
+            
+            print(count)
+            if(self.timeStepCount == count):
+                vL = self.setVelocity(currentPoint,endPoint)
+                vR = vL
+                self.timeStepCount = 0
+                print("Done")
+            else:
+                vL = self.setVelocity(currentPoint,endPoint)
+                vR = 0
+                
 
         return vL,vR
 
@@ -131,12 +215,13 @@ class iBoiler:
     def getAngle(self,points, mode = 1):
         if mode == 0:
             if abs(points[0][0]-points[1][0]) == 0:
-                return 90.0
-            return np.rad2deg(np.arctan((abs(points[0][1]-points[1][1])/abs(points[0][0]-points[1][0]))))
+                return 1.5708
+            return np.arctan((abs(points[0][1]-points[1][1])/abs(points[0][0]-points[1][0])))
         if mode == 1:
             if abs(points[0][1]-points[1][1]) == 0:
-                return 90.0
-            return np.rad2deg(np.arctan((abs(points[0][0]-points[1][0])/abs(points[0][1]-points[1][1]))))
+                return 1.5708
+            #return np.arctan((abs(points[0][0]-points[1][0])/abs(points[0][1]-points[1][1])))
+            return np.arctan2(points[0][1]-points[1][1],points[0][0]-points[1][0])
 
     def getRoomCoordinates(self,roomNumber):
         return self.mapParametersDict[roomNumber]
