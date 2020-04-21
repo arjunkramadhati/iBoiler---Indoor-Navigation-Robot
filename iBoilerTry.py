@@ -69,8 +69,8 @@ class iBoiler:
 
 
     def truePositionUpdate(self,vL,vR):
-        #print(vL)
-        #print(vR)
+        print(vL)
+        print(vR)
         
         currentPosition = self.masterLocation[0]
         currentTheta = self.masterTheta
@@ -81,10 +81,7 @@ class iBoiler:
             newY = int(vR*self.timeStep*np.sin(currentTheta)+currentPosition[1])
             self.masterLocation = [(newX,newY)]
         else:
-            if vL > vR:
-                self.masterTheta = currentTheta + (np.pi/18)
-            else:
-                self.masterTheta = currentTheta - (np.pi/18)
+            self.masterTheta = currentTheta + (np.pi/18) 
             '''
             alpha = np.arctan((self.timeStep*(vL-vR))/(self.botRadius*2))
             newX = int(currentPosition[0] + ((self.timeStep*(vL+vR)/2)*np.sin(currentTheta-alpha)))
@@ -97,7 +94,6 @@ class iBoiler:
         rightWheelPosY = currentPosition[0][1] + int(self.botRadius*(np.cos(-90)))
         rightWheelPosXUpdated = rightWheelPosX + int(radiusRight*(np.sin(self.masterTheta)))
         rightWheelPosYUpdated = rightWheelPosY + int(radiusRight*(np.cos(self.masterTheta)))
-
         radiusLeft = vL * self.timeStep
         leftWheelPosX = currentPosition[0][0] + int(self.botRadius*(np.sin(90)))
         leftWheelPosY = currentPosition[0][1] + int(self.botRadius*(np.cos(90)))
@@ -117,64 +113,16 @@ class iBoiler:
             self.currentWP = wayPoint
             botLocation = [self.locactionServicesHelper.getCurrentLocation(self.masterLocation)]
             headingAngleNeeded = self.getAngle([botLocation[0],tuple(reversed(wayPoint))]) 
-            ept1=int( botLocation[0][0] + 4*(np.cos(self.masterTheta)))
-            ept2=int( botLocation[0][1] + 4*(np.sin(self.masterTheta)))
-            v1 = np.array(botLocation[0]) - np.array(tuple(reversed(wayPoint)))
-            v2 = np.array(botLocation[0]) - np.array([ept1,ept2])
-            print(np.rad2deg(self.getDiffAngle(v1,v2)))
             print("ha" + str(headingAngleNeeded))
             print("ma" + str(self.masterTheta))
             if headingAngleNeeded != self.masterTheta:
-                self.timeStepCount = 0
-                if(ept1>tuple(reversed(wayPoint))[0]) and (ept2>tuple(reversed(wayPoint))[1]):
-                    print("Target towards NW")
-                    for i in range(0,(int(self.getDiffAngle(v1,v2)) +17), int(np.pi) +1):
-                        print("Turning LEFT")
-                        self.truePositionUpdate(self.botturningVelocity,0)
-                
-                if(ept1<tuple(reversed(wayPoint))[0]) and (ept2<tuple(reversed(wayPoint))[1]):
-                    print("Target towards SE")
-                
-                if(ept1>tuple(reversed(wayPoint))[0]) and (ept2<tuple(reversed(wayPoint))[1]):
-                    print("Target towards SW")
-                    for i in range(0,(int(self.getDiffAngle(v1,v2)) +17), int(np.pi) +1):
-                        print("Turning RIGHT")
-                        self.truePositionUpdate(0,self.botturningVelocity)
-
-                if(ept1<tuple(reversed(wayPoint))[0]) and (ept2>tuple(reversed(wayPoint))[1]):
-                    print("Target towards NE")
-                '''
-                angleDiff = abs(self.masterTheta-np.pi)
-                
-                if headingAngleNeeded < angleDiff:
-                    
-                    
-                    #count =int((self.timeStep*( abs(self.masterTheta-np.pi) - headingAngleNeeded ))/(np.pi/18) )
-
-                    #print("count" + str(count))
-                    
-                    for i in range(0,int(angleDiff + abs(headingAngleNeeded)), int(np.pi/180) +1):
-                        print("Turning RIGHT")
-                        self.truePositionUpdate(0,self.botturningVelocity)
-                    #self.turningOperation(count, "RIGHT")
-                    
-                    #self.turningOperation(count, "RIGHT")
-                    
+                if self.masterTheta >= np.pi:
+                    count =int((self.timeStep*(headingAngleNeeded + (np.pi+self.masterTheta)))/(np.pi/18))
                 else:
-                    #count =int((self.timeStep*(headingAngleNeeded- abs(self.masterTheta-np.pi) ))/(np.pi/18) )
-                    #print("count" + str(count))
-                    
-                    for i in range(0,int(abs(headingAngleNeeded) + angleDiff)  , int(np.pi/180) +1 ):
-                        print("Turning LEFT")
-                        self.truePositionUpdate(self.botturningVelocity,0)
-                    #self.turningOperation(count, "LEFT")
-                    
-                    #self.turningOperation(count, "LEFT")'''
-                     
-                
-
-                
-                
+                    count =int((self.timeStep*(headingAngleNeeded + (np.pi-self.masterTheta)))/(np.pi/18)) 
+                print("count" + str(count))
+                self.timeStepCount = 0
+                self.turningOperation(count)
             else:
                 vL = self.botMaxVelocity
                 vR = vL
@@ -188,20 +136,16 @@ class iBoiler:
             vR = vL
             while(distance.euclidean(self.masterLocation,tuple(reversed(wayPoint))) >25):
                 self.truePositionUpdate(vL,vR)
-                #print('distance' + str(distance.euclidean(self.masterLocation,tuple(reversed(wayPoint)))))
+                print('distance' + str(distance.euclidean(self.masterLocation,tuple(reversed(wayPoint)))))
                 time.sleep(1)
+                #print(botLocation)
                 
+                #self.botGod()
 
-    def turningOperation(self, count, turnDirection):
+    def turningOperation(self, count):
         while(self.timeStepCount< count):
-            if turnDirection == "LEFT":
-                
-                vL = self.botturningVelocity
-                vR = 0
-            if turnDirection == "RIGHT":
-                
-                vR = self.botturningVelocity
-                vL = 0
+            vL = self.botturningVelocity
+            vR = 0
             self.truePositionUpdate(vL,vR)
             self.timeStepCount +=1
             print("current count " + str(self.timeStepCount))
@@ -267,10 +211,6 @@ class iBoiler:
     def getInitialTheta(self):
         return None
 
-    def getDiffAngle(self,v1,v2):
-        cosine_angle = np.dot(v1, v2) / (np.linalg.norm(v1) * np.linalg.norm(v2))
-        return np.arccos(cosine_angle)
-
     def getAngle(self,points, mode = 1):
         if mode == 0:
             if abs(points[0][0]-points[1][0]) == 0:
@@ -295,5 +235,5 @@ class iBoiler:
         return self.pathTracker.getWayPoints(plannedRoute)
 
 
-a = iBoiler('physics_corrected.jpg','Database/db',4,5,5,10,4.32,3.18,0.7,1)
+#a = iBoiler('physics_corrected.jpg','Database/db',4,5,5,10,4.32,3.18,0.7,1)
 #a.botBrain('R112','R121',[(500,111)],-90)

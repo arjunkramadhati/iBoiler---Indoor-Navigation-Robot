@@ -94,7 +94,6 @@ class locationServices:
 
     def getKNN(self,rssTuple):
         return self.knnHelper.kneighbors([rssTuple], return_distance=False)
-
 '''
 saver = databaseManager('Database/db')
 ls = locationServices(saver.getDbEntry('L5'),saver.getDbEntry('L1'),saver.getDbEntry('L2'),10,4.32,3.18)

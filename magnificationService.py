@@ -71,8 +71,8 @@ class magnificationService:
         angle2 = theta + 0.436332 
         angleTest = theta 
         radius2= radius+10
-        ept1=int( point[0] + radius*(np.sin(angleTest)))
-        ept2=int( point[1] + radius*(np.cos(angleTest)))
+        ept1=int( point[0] + radius*(np.cos(angleTest)))
+        ept2=int( point[1] + radius*(np.sin(angleTest)))
         ep1 = int(point[0] + radius*(np.cos(angle)))
         ep2 = int(point [1] + (radius*(np.sin(angle))))
         ep3 = int(point[0] + (radius2*(np.cos(angle))))
@@ -96,9 +96,10 @@ class magnificationService:
             print("Target towards NE")
         if(point[0]<ept1) and (point[1]>ept2):
             print("Target towards SW")
+        cv2.circle(self.img,(ept1,ept2) , 1, (0,0,255), 5)
         
         cv2.line(self.img,(ep1,ep2),(ep3,ep4),color,2)
-        cv2.line(self.img,(ep5,ep6),(ep7,ep8),(0,0,255),2)
+        cv2.line(self.img,(ep5,ep6),(ep7,ep8),color,2)
 
 
 '''

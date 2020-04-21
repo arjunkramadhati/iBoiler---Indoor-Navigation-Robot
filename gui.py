@@ -3,11 +3,12 @@ from PIL import Image, ImageTk
 import tkinter.font as font
 from databaseManager import databaseManager
 import matplotlib
-from iBoiler import iBoiler
+from iBoilerTry import iBoiler
 import cv2
 import threading
 import time
 import PIL.Image, PIL.ImageTk
+import numpy as np
 
 class gui(Frame):
 
