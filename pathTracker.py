@@ -56,15 +56,15 @@ class pathTracker:
         return self.wayPoints
             
 
-
 '''
+
 pt=pathTracker()
 saver = databaseManager('Database/db')
 locationServicesH = locationServices(saver.getDbEntry('L5'),saver.getDbEntry('L1'),saver.getDbEntry('L2'),10,4.32,3.18,)
 print((198,92) in saver.getDbEntry('L2'))
 a = planPath('physics_corrected.jpg','Database/runtimeImages/path.jpg',saver.getDbEntry('L2'),0.7)
-goal = saver.getDbEntry('L2')[locationServicesH.getLegalKNN(saver.getDbEntry('L4')['R117'])[0][0]]
-start = saver.getDbEntry('L2')[locationServicesH.getLegalKNN(saver.getDbEntry('L4')['R112'])[0][0]]
+goal = saver.getDbEntry('L2')[locationServicesH.getLegalKNN(saver.getDbEntry('L4')['R121'])[0][0]]
+start = saver.getDbEntry('L2')[locationServicesH.getLegalKNN(saver.getDbEntry('L4')['R110'])[0][0]]
 #start = (496,112)
 #goal = (207,92)
 #print(start)

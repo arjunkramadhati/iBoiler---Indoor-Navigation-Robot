@@ -96,6 +96,8 @@ class gui(Frame):
         threadStart = threading.Thread(target=self.beginNavigation, daemon=True )
         threadResults = threading.Thread(target=self.obtainResults, daemon=True)
         threadStart.start()
+        #t1 = time.time()
+        #while(t)
         time.sleep(3)
         threadResults.start()
 
